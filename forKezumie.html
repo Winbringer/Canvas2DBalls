@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Сигна</title>
+    <style>
+        canvas{
+            border: solid white 1px;
+            position: relative;
+            margin-left: 0;
+            height: 400px;
+            width: 800px;
+        }
+        button{
+            transition: all 2s;
+            text-shadow: 2px 2px 3px rgba(255,255,255,0.2);
+            height: 50px;
+            width: 100px;
+            border: green;
+            background-color: green;
+            margin-left: 350px;
+            position: relative;
+            border-radius: 5px;
+        }
+        button:hover{
+            height: 50px;
+            width: 200px;
+            position: relative;
+            margin-left: 300px;
+            border-radius: 10px;
+        }
+        div{
+            margin-left: 10%;
+        }
+        p{
+            transition: all 2s;
+            position: relative;
+            margin-left: 250px;
+            font-size: x-large;
+            visibility: hidden;
+            color: white;
+            opacity:0.1;
+            filter:alpha(opacity=10);
+        }
+        .pp{
+            transition: all 2s;
+            position: relative;
+            margin-left: 250px;
+            font-size: x-large;
+            visibility: visible;
+            color: purple;
+            text-shadow: 2px 2px 3px rgba(255,255,255,0.2);
+            background-color:white;
+            opacity:1;
+            filter:alpha(opacity=100);
+        }
+    </style>
+    <script>
+        //254
+        var canvas;
+        var context;
+        var colors = ["green", "blue", "red", "orange","purple"];
+        var circles = [];
+        var flag=false;
+        var cOld=new Circle(5,5,"white");
+        function randomFromTo(from, to) {
+            return Math.floor(Math.random() * (to - from + 1) + from);
+        }
+        window.onload=function() {
+            document.getElementById("dt").addEventListener('click',sharp);
+            canvas = document.getElementById("myCanvas");
+            context = canvas.getContext("2d");
+            document.getElementById("myCanvas").addEventListener('mousedown',chaos);
+        };
+        function Circle(x,y,color){
+            this.x=x;
+            this.y=y;
+            this.px=0;
+            this.py=0;
+            this.color=color;
+            this.radius=8;
+            this.xSpeed=2;//x/200;
+            this.ySpeed=1;//y/200;
+            var bind=this;
+            this.iMotion=function(){
+                    context.beginPath();
+                    context.arc(bind.px,bind.py,bind.radius,0,2*Math.PI);
+                  //  context.shadowOffsetX=3;
+                  //  context.shadowOffsetY=3;
+                    // context.shadowBlur=3;
+                   // context.shadowColor='black';
+                    context.lineWidth = 1;
+                    context.fillStyle=bind.color;
+                context.strokeStyle=bind.color;
+                    context.fill();
+                    context.stroke();
+                bind.xSpeed=Math.abs(bind.x-bind.px)/50;
+                bind.ySpeed=Math.abs(bind.y-bind.py)/50;
+                if(bind.px<bind.x) {
+                    bind.px += bind.xSpeed;
+                }
+                if(bind.px>bind.x) {
+                    bind.px += -bind.xSpeed;
+                }
+                if(bind.py<bind.y) {
+                    bind.py += bind.ySpeed;
+                }
+                if(bind.py>bind.y) {
+                    bind.py += -bind.ySpeed;
+                }
+
+            };
+            this.bezierMy = function(t, p0, p1, p2, p3){
+                var cX = 3 * (p1.x - p0.x),
+                        bX = 3 * (p2.x - p1.x) - cX,<!--  w ww.  j  a  v a 2  s .co  m-->
+                        aX = p3.x - p0.x - cX - bX;
+                var cY = 3 * (p1.y - p0.y),
+                        bY = 3 * (p2.y - p1.y) - cY,
+                        aY = p3.y - p0.y - cY - bY;
+                var x = (aX * Math.pow(t, 3)) + (bX * Math.pow(t, 2)) + (cX * t) + p0.x;
+                var y = (aY * Math.pow(t, 3)) + (bY * Math.pow(t, 2)) + (cY * t) + p0.y;
+                return {x: x, y: y};
+            };
+        }
+        function n(){
+            var c=0;
+            var q=0;
+            var p=0;
+            for(var i=0.01;i<3;i+=0.001) {
+                p=Math.PI * i;
+               q= (Math.cos(p)+2);
+                var xPos=7*p+10;
+                var yPos=100*q-90;
+
+                c = new Circle(xPos,yPos,colors[0]);                
+                if(check(c)){
+                    circles.push(c);
+                    cOld=c;
+               }
+            }
+        }
+        function a(){
+            var c=0;
+            var q=0;
+            var p=0;
+            for(var i=0.01;i<2;i+=0.001) {
+                p=Math.PI * i;
+                q= (Math.cos(p)+2);
+                var xPos=7*p+85;
+                var yPos=100*q-90;
+
+                c = new Circle(xPos,yPos,colors[1]);                
+                if(check(c)){
+                    circles.push(c);
+                    cOld=c;
+                }
+            }
+            c = new Circle(7*Math.PI+85,120,colors[1]);
+            circles.push(c);
+        }
+        function m(){
+            var c=0;
+            var q=0;
+            var p=0;
+            for(var i=0.01;i<4;i+=0.001) {
+                p=Math.PI * i;
+                q= (Math.cos(p)+2);
+                var xPos=6*p+150;
+                var yPos=100*q-90;
+                if(i>1&&i<3)yPos*=0.7;
+                c = new Circle(xPos,yPos,colors[4]);                
+                if(check(c)){
+                    circles.push(c);
+                    cOld=c;
+                }
+            }
+        }
+        function ii(){
+            var c=0;
+            var q=0;
+            var p=0;
+            for(var i=0.01;i<1;i+=0.001) {
+                p=Math.PI * i;
+                q= (Math.cos(p)+2);
+                var xPos=6*p+250;
+                var yPos=100*q-90;
+                c = new Circle(xPos,yPos,colors[3]);                
+                if(check(c)){
+                    circles.push(c);
+                    cOld=c;
+                }
+            }
+            circles[circles.length-2].color="white"
+        }
+        function heart(x,y){
+            var accuracy = 0.01, 
+                    p0 = {x: x+80, y: y+80},
+                    p1 = {x:x+ 40, y:y},
+                    p2 = {x: x, y: y+40},
+                    p3 = {x: x+80, y: y+160};
+            for (var i=0; i<1; i+=accuracy){
+                var p =cOld.bezierMy(i,p0,p1,p2,p3);
+                var c= new Circle(p.x,p.y,"red");
+                if(check(c)){
+                circles.push(c);
+                cOld=c;
+                 }
+            }
+            p0 = {x: x+80, y: y+160};
+            p1 = {x:x+ 160, y:y+40};
+            p2 = {x: x+120, y: y};
+            p3={x: x+80, y: y+80};
+            for (var i=0; i<1; i+=accuracy){
+                p =cOld.bezierMy(i, p0, p1, p2, p3);
+                c= new Circle(p.x,p.y,"red");
+                if(check(c)){
+                    circles.push(c);
+                    cOld=c;
+                }
+            }
+
+        }
+        function check(c){
+            return Math.sqrt(Math.pow(c.x - cOld.x, 2) + Math.pow(c.y - cOld.y, 2)) > Math.sqrt(Math.pow(c.radius, 2)) * 2;
+        }
+
+  function      drawC(){
+      if(flag){
+      canvas.height=400;
+          context.globalAlpha=1;
+          for(var i=0;i<circles.length;i++){
+          var c=circles[i];
+          c.iMotion();
+      }
+          context.beginPath();
+          context.fillStyle='black';
+          context.strokeStyle="black";
+          context.font='15px Comic Sans MS';
+          context.lineWidth = 1;
+          context.shadowOffsetX=2;
+          context.shadowOffsetY=2;
+          context.shadowBlur=3;
+          context.shadowColor='rgba(255,255,255,0.1)';
+          context.fillText("By Victorem ™",190,370);
+          setTimeout(drawC,20);
+      }
+  }
+        function chaos(cl){
+            for(var i1=0;i1<circles.length;i1++){
+                circles[i1].px=randomFromTo(20,canvas.width -20);
+                circles[i1].py=randomFromTo(20,canvas.height-20);
+               if(cl&&circles[i1].color!='white')circles[i1].color=colors[randomFromTo(0,4)];
+            }
+        }
+        function sharp(){
+           flag = !flag;
+            circles=[];
+            context.clearRect(0, 0, canvas.width, canvas.height);
+           n();
+           a();
+            m();
+            ii();
+            heart(65,220);
+            chaos(false);
+            document.getElementById("p").className="pp";
+            setTimeout(drawC,20);
+        }
+    </script>
+</head>
+<body>
+<div>
+    <button id="dt" >Нажми меня!</button><br>
+    <p id="p">Теперь покликай по картинке <br> после того как шарики перестанут двигаться</p><br>
+<canvas id="myCanvas" >Браузер не поддерживает холст</canvas><br>
+    </div>
+</body>
+</html>
